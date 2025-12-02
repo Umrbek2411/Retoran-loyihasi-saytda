@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ ROMS Pro - Premium Restaurant Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #252d3d;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --card-bg: #1e293b;
+            --hover: #334155;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .content-area {
+            margin-left: 280px;
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: scale(1.05);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            background-color: var(--hover);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background-color: var(--accent-blue);
+        }
+
+        .table-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .table-card:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-item {
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                z-index: 1000;
+                height: 100vh;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .content-area {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar flex flex-col h-full">
+        <div class="p-6 border-b border-gray-700">
+            <div class="flex items-center">
+                <span class="text-3xl mr-3">🍽️</span>
+                <h1 class="text-2xl font-bold text-blue-400">ROMS Pro</h1>
+            </div>
+        </div>
+        
+        <div class="flex-1 p-4">
+            <div class="space-y-2">
+                <div class="nav-item p-3 rounded-lg cursor-pointer active" data-page="pos">
+                    <i class="fas fa-shopping-cart mr-3"></i>
+                    <span>POS Tizimi</span>
+                </div>
+                <div class="nav-item p-3 rounded-lg cursor-pointer" data-page="kds">
+                    <i class="fas fa-utensils mr-3"></i>
+                    <span>Oshxona (KDS)</span>
+                </div>
+                <div class="nav-item p-3 rounded-lg cursor-pointer" data-page="menu">
+                    <i class="fas fa-list-alt mr-3"></i>
+                    <span>Menu Boshqaruvi</span>
+                </div>
+                <div class="nav-item p-3 rounded-lg cursor-pointer" data-page="reports">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    <span>Hisobotlar</span>
+                </div>
+                <div class="nav-item p-3 rounded-lg cursor-pointer" data-page="settings">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span>Sozlamalar</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-gray-700">
+            <div class="text-center text-gray-400 text-sm">
+                <p>Version 2.0 Pro</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content-area flex-1 flex flex-col overflow-hidden">
+        <!-- Top Bar -->
+        <div class="bg-gray-800 p-4 flex justify-between items-center shadow-lg">
+            <div class="flex items-center">
+                <button class="mobile-menu-btn mr-4 text-xl md:hidden">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 class="text-xl font-bold" id="page-title">POS Tizimi</h2>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                <div class="text-center">
+                    <div class="flex items-center text-yellow-400">
+                        <i class="fas fa-bolt mr-2"></i>
+                        <span id="active-orders-count">Faol: 0</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="flex items-center text-green-400">
+                        <i class="fas fa-coins mr-2"></i>
+                        <span id="daily-revenue">Bugun: 0 so'm</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="flex flex-col items-end">
+                        <div id="current-time" class="font-semibold">00:00:00</div>
+                        <div id="current-date" class="text-sm text-gray-400">01.01.2023 - Dushanba</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="flex-1 overflow-auto p-4">
+            <!-- POS Page -->
+            <div id="pos-page" class="page-content fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                    <!-- Tables Section -->
+                    <div class="card p-4">
+                        <h3 class="text-xl font-bold mb-4 text-center">🪑 STOL TANLASH</h3>
+                        
+                        <div class="mb-4 flex space-x-2">
+                            <button class="filter-btn active px-3 py-1 rounded bg-blue-500 text-white" data-filter="all">Hammasi</button>
+                            <button class="filter-btn px-3 py-1 rounded bg-gray-700" data-filter="empty">Bo'sh</button>
+                            <button class="filter-btn px-3 py-1 rounded bg-gray-700" data-filter="occupied">Band</button>
+                            <button class="filter-btn px-3 py-1 rounded bg-gray-700" data-filter="payment">To'lov</button>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 overflow-y-auto max-h-96">
+                            <!-- Tables will be dynamically generated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Menu Section -->
+                    <div class="card p-4">
+                        <h3 class="text-xl font-bold mb-4 text-center">📋 MENU</h3>
+                        
+                        <div class="mb-4">
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" id="menu-search" class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Qidirish...">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 flex overflow-x-auto space-x-2 pb-2">
+                            <!-- Categories will be dynamically generated here -->
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-96">
+                            <!-- Menu items will be dynamically generated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Cart Section -->
+                    <div class="card p-4">
+                        <h3 class="text-xl font-bold mb-4 text-center" id="cart-title">🛒 BUYURTMA</h3>
+                        
+                        <div class="overflow-y-auto max-h-64 mb-4">
+                            <div id="cart-items">
+                                <!-- Cart items will be dynamically generated here -->
+                                <p class="text-center text-gray-500 py-8">Hozircha buyurtma yo'q</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-700 pt-4 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-semibold">JAMI:</span>
+                                <span id="cart-total" class="text-2xl font-bold text-green-500">0 so'm</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <button id="send-to-kitchen" class="btn-warning w-full py-3 rounded-lg font-bold">
+                                <i class="fas fa-paper-plane mr-2"></i> Oshxonaga Yuborish
+                            </button>
+                            <button id="process-payment" class="btn-success w-full py-3 rounded-lg font-bold">
+                                <i class="fas fa-credit-card mr-2"></i> HISOB-KITOB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KDS Page -->
+            <div id="kds-page" class="page-content hidden">
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-center">👨‍🍳 OSHXONA DISPLAY TIZIMI (KDS)</h2>
+                    
+                    <div class="mb-6 flex space-x-4 justify-center">
+                        <button class="kds-filter-btn active px-4 py-2 rounded bg-blue-500 text-white" data-filter="all">Hammasi</button>
+                        <button class="kds-filter-btn px-4 py-2 rounded bg-gray-700" data-filter="new">Yangi</button>
+                        <button class="kds-filter-btn px-4 py-2 rounded bg-gray-700" data-filter="progress">Jarayonda</button>
+                        <button class="kds-filter-btn px-4 py-2 rounded bg-gray-700" data-filter="ready">Tayyor</button>
+                    </div>
+                    
+                    <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- KDS orders will be dynamically generated here -->
+                        <div class="text-center py-10 text-gray-500">
+                            <i class="fas fa-check-circle text-4xl mb-4"></i>
+                            <p>Hozircha buyurtma yo'q</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu Management Page -->
+            <div id="menu-page" class="page-content hidden">
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6">📋 MENU BOSHQARUVI</h2>
+                    
+                    <div class="mb-6 p-4 bg-gray-800 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-3">➕ Yangi Kategoriya Qo'shish</h3>
+                        <div class="flex space-x-3">
+                            <input type="text" id="new-category" class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kategoriya nomi">
+                            <button id="add-category" class="btn-primary px-4 py-2 rounded-lg font-semibold">Qo'shish</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3">Mavjud Kategoriyalar</h3>
+                        <div id="categories-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Categories will be dynamically generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-3">➕ Yangi Taom Qo'shish</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Kategoriya</label>
+                                <select id="item-category" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <!-- Categories will be dynamically populated -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Taom Nomi</label>
+                                <input type="text" id="item-name" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Taom nomi">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Narxi (so'm)</label>
+                                <input type="number" id="item-price" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Narxi">
+                            </div>
+                            <div class="flex items-end">
+                                <button id="add-item" class="btn-success w-full py-2 rounded-lg font-semibold">Taom Qo'shish</button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-2">Kategoriya</th>
+                                        <th class="px-4 py-2">Nomi</th>
+                                        <th class="px-4 py-2">Narxi</th>
+                                        <th class="px-4 py-2">Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menu-items-table">
+                                    <!-- Menu items will be dynamically generated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Page -->
+            <div id="reports-page" class="page-content hidden">
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6">📊 HISOBOTLAR VA STATISTIKA</h2>
+                    
+                    <div class="mb-6 p-4 bg-gray-800 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-3">📅 Davrni Tanlang</h3>
+                        <div class="flex space-x-4">
+                            <button class="report-period-btn active px-4 py-2 rounded bg-blue-500 text-white" data-period="today">Bugun</button>
+                            <button class="report-period-btn px-4 py-2 rounded bg-gray-700" data-period="week">Bu Hafta</button>
+                            <button class="report-period-btn px-4 py-2 rounded bg-gray-700" data-period="month">Bu Oy</button>
+                            <button class="report-period-btn px-4 py-2 rounded bg-gray-700" data-period="all">Hammasi</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="card p-4 text-center">
+                            <h3 class="text-lg font-semibold text-green-500 mb-2">💰 Jami Sotuv</h3>
+                            <p id="total-sales" class="text-2xl font-bold">0 so'm</p>
+                        </div>
+                        <div class="card p-4 text-center">
+                            <h3 class="text-lg font-semibold text-blue-500 mb-2">🧾 Hisob Soni</h3>
+                            <p id="order-count" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div class="card p-4 text-center">
+                            <h3 class="text-lg font-semibold text-purple-500 mb-2">📊 O'rtacha Hisob</h3>
+                            <p id="avg-bill" class="text-2xl font-bold">0 so'm</p>
+                        </div>
+                        <div class="card p-4 text-center">
+                            <h3 class="text-lg font-semibold text-yellow-500 mb-2">⭐ Eng Ommabop</h3>
+                            <p id="top-item" class="text-xl font-bold">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="card p-4">
+                            <h3 class="text-lg font-semibold mb-4">📈 Sotuv Trendi</h3>
+                            <canvas id="sales-chart" height="300"></canvas>
+                        </div>
+                        <div class="card p-4">
+                            <h3 class="text-lg font-semibold mb-4">🏆 Top 5 Taomlar</h3>
+                            <canvas id="top-items-chart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-4">
+                        <h3 class="text-lg font-semibold mb-4">📋 Batafsil Sotuv Ma'lumotlari</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-2">Sana</th>
+                                        <th class="px-4 py-2">Vaqt</th>
+                                        <th class="px-4 py-2">Stol</th>
+                                        <th class="px-4 py-2">Mahsulotlar</th>
+                                        <th class="px-4 py-2">Jami</th>
+                                        <th class="px-4 py-2">Chegirma</th>
+                                        <th class="px-4 py-2">Yakuniy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-table">
+                                    <!-- Sales data will be dynamically generated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div id="settings-page" class="page-content hidden">
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6">⚙️ SOZLAMALAR</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-blue-500">💾 Ma'lumotlar Boshqaruvi</h3>
+                            <div class="space-y-4">
+                                <button id="clear-history" class="btn-danger w-full py-3 rounded-lg font-semibold">
+                                    <i class="fas fa-trash mr-2"></i> Sotuv Tarixini Tozalash
+                                </button>
+                                <button id="export-data" class="btn-primary w-full py-3 rounded-lg font-semibold">
+                                    <i class="fas fa-download mr-2"></i> Ma'lumotlarni Eksport Qilish
+                                </button>
+                                <button id="reset-system" class="btn-warning w-full py-3 rounded-lg font-semibold">
+                                    <i class="fas fa-redo mr-2"></i> Tizimni Qayta Yuklash
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-green-500">ℹ️ Tizim Ma'lumotlari</h3>
+                            <div class="space-y-2">
+                                <p><span class="font-semibold">📋 Menu Kategoriyalari:</span> <span id="category-count">0</span></p>
+                                <p><span class="font-semibold">🍽️ Jami Mahsulotlar:</span> <span id="item-count">0</span></p>
+                                <p><span class="font-semibold">🪑 Stollar Soni:</span> <span id="table-count">20</span></p>
+                                <p><span class="font-semibold">📊 Sotuv Tarixlari:</span> <span id="sales-count">0</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="card p-6 lg:col-span-2">
+                            <h3 class="text-xl font-semibold mb-4 text-purple-500">ℹ️ Dastur Haqida</h3>
+                            <p class="text-lg font-semibold mb-2">ROMS Pro - Premium Restaurant Management System</p>
+                            <p class="text-gray-400">Version 2.0 Pro Edition</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg w-full max-w-md mx-4">
+            <div class="p-6 border-b border-gray-700">
+                <h3 class="text-xl font-bold text-center text-blue-500">💳 To'lov</h3>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-4 text-center">
+                    <h4 id="payment-table" class="text-lg font-semibold">STOL 1</h4>
+                </div>
+                
+                <div class="mb-4 max-h-60 overflow-y-auto">
+                    <div id="payment-items">
+                        <!-- Payment items will be dynamically generated here -->
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="payment-subtotal">0 so'm</span>
+                    </div>
+                    
+                    <div class="flex items-center mb-2">
+                        <span class="mr-2">Chegirma (%):</span>
+                        <input type="number" id="discount-percent" class="w-20 px-2 py-1 rounded bg-gray-700 border border-gray-600" value="0" min="0" max="100">
+                    </div>
+                    
+                    <div class="flex justify-between font-bold text-lg border-t border-gray-700 pt-2">
+                        <span>JAMI:</span>
+                        <span id="payment-total">0 so'm</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button id="cancel-payment" class="btn-danger flex-1 py-2 rounded-lg font-semibold">Bekor Qilish</button>
+                    <button id="confirm-payment" class="btn-success flex-1 py-2 rounded-lg font-semibold">To'lovni Tasdiqlash</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receipt-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white text-black rounded-lg w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">ROMS PRO RESTAURANT</h3>
+                    <div class="border-t border-black my-2"></div>
+                </div>
+                
+                <div id="receipt-content" class="text-sm font-mono">
+                    <!-- Receipt content will be dynamically generated here -->
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button id="close-receipt" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white">Yopish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        const state = {
+            menu: {},
+            tables: {},
+            activeOrders: {},
+            salesHistory: [],
+            selectedTable: null,
+            currentPage: 'pos'
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function initializeApp() {
+            // Load default menu if no data exists
+            if (!localStorage.getItem('romsData')) {
+                state.menu = getDefaultMenu();
+                state.tables = initializeTables();
+                saveData();
+            } else {
+                loadData();
+            }
+            
+            // Initialize UI
+            renderTables();
+            renderMenuCategories();
+            renderMenuItems();
+            updateKDSDisplay();
+            updateReports();
+            updateSettingsInfo();
+        }
+
+        function getDefaultMenu() {
+            return {
+                "🍲 Milliy Taomlar": [
+                    {name: "O'zbek Plovi", price: 45000},
+                    {name: "Manti", price: 35000},
+                    {name: "Lag'mon", price: 38000},
+                    {name: "Shashlik", price: 25000},
+                    {name: "Norin", price: 42000}
+                ],
+                "🥗 Salatlar": [
+                    {name: "Achiq-chuchuk", price: 15000},
+                    {name: "Sezar", price: 28000},
+                    {name: "Yunon Salati", price: 32000},
+                    {name: "Olivye", price: 18000}
+                ],
+                "🍹 Ichimliklar": [
+                    {name: "Coca-Cola 1L", price: 18000},
+                    {name: "Fanta 1L", price: 18000},
+                    {name: "Ko'k Choy", price: 8000},
+                    {name: "Qora Choy", price: 8000},
+                    {name: "Fresh", price: 22000}
+                ],
+                "🍰 Desertlar": [
+                    {name: "Tort", price: 25000},
+                    {name: "Muzqaymoq", price: 15000},
+                    {name: "Tiramisu", price: 30000}
+                ]
+            };
+        }
+
+        function initializeTables() {
+            const tables = {};
+            for (let i = 1; i <= 20; i++) {
+                tables[i] = { status: "Bo'sh", order: null };
+            }
+            return tables;
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    switchPage(page);
+                });
+            });
+
+            // Mobile menu
+            document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('open');
+            });
+
+            // Table filters
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-500'));
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.add('bg-gray-700'));
+                    this.classList.add('active', 'bg-blue-500');
+                    this.classList.remove('bg-gray-700');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    renderTables(filter);
+                });
+            });
+
+            // KDS filters
+            document.querySelectorAll('.kds-filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.kds-filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-500'));
+                    document.querySelectorAll('.kds-filter-btn').forEach(b => b.classList.add('bg-gray-700'));
+                    this.classList.add('active', 'bg-blue-500');
+                    this.classList.remove('bg-gray-700');
+                    
+                    // Filter logic would be implemented here
+                    updateKDSDisplay();
+                });
+            });
+
+            // Report periods
+            document.querySelectorAll('.report-period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.report-period-btn').forEach(b => b.classList.remove('active', 'bg-blue-500'));
+                    document.querySelectorAll('.report-period-btn').forEach(b => b.classList.add('bg-gray-700'));
+                    this.classList.add('active', 'bg-blue-500');
+                    this.classList.remove('bg-gray-700');
+                    
+                    updateReports();
+                });
+            });
+
+            // Menu search
+            document.getElementById('menu-search').addEventListener('input', function() {
+                renderMenuItems(this.value);
+            });
+
+            // Add category
+            document.getElementById('add-category').addEventListener('click', function() {
+                const categoryName = document.getElementById('new-category').value.trim();
+                if (categoryName && !state.menu[categoryName]) {
+                    state.menu[categoryName] = [];
+                    saveData();
+                    renderMenuCategories();
+                    renderMenuItems();
+                    document.getElementById('new-category').value = '';
+                    
+                    // Show success message
+                    showNotification(`"${categoryName}" kategoriyasi qo'shildi!`, 'success');
+                }
+            });
+
+            // Add menu item
+            document.getElementById('add-item').addEventListener('click', function() {
+                const category = document.getElementById('item-category').value;
+                const name = document.getElementById('item-name').value.trim();
+                const price = parseInt(document.getElementById('item-price').value);
+                
+                if (category && name && price > 0) {
+                    state.menu[category].push({name, price});
+                    saveData();
+                    renderMenuItems();
+                    renderMenuTable();
+                    
+                    // Clear form
+                    document.getElementById('item-name').value = '';
+                    document.getElementById('item-price').value = '';
+                    
+                    // Show success message
+                    showNotification(`"${name}" qo'shildi!`, 'success');
+                }
+            });
+
+            // Send to kitchen
+            document.getElementById('send-to-kitchen').addEventListener('click', function() {
+                if (!state.selectedTable || !state.activeOrders[state.selectedTable]) {
+                    showNotification('Buyurtma mavjud emas!', 'warning');
+                    return;
+                }
+                
+                const order = state.activeOrders[state.selectedTable];
+                order.status = "Jarayonda";
+                
+                for (let item of order.items) {
+                    item.kdsStatus = "Tayyorlanmoqda";
+                }
+                
+                saveData();
+                updateKDSDisplay();
+                showNotification('Buyurtma oshxonaga yuborildi!', 'success');
+            });
+
+            // Process payment
+            document.getElementById('process-payment').addEventListener('click', function() {
+                if (!state.selectedTable || !state.activeOrders[state.selectedTable]) {
+                    showNotification('Buyurtma mavjud emas!', 'warning');
+                    return;
+                }
+                
+                openPaymentModal();
+            });
+
+            // Payment modal events
+            document.getElementById('cancel-payment').addEventListener('click', function() {
+                document.getElementById('payment-modal').classList.add('hidden');
+            });
+
+            document.getElementById('confirm-payment').addEventListener('click', function() {
+                processPayment();
+            });
+
+            document.getElementById('discount-percent').addEventListener('input', function() {
+                updatePaymentTotal();
+            });
+
+            document.getElementById('close-receipt').addEventListener('click', function() {
+                document.getElementById('receipt-modal').classList.add('hidden');
+            });
+
+            // Settings buttons
+            document.getElementById('clear-history').addEventListener('click', function() {
+                if (confirm("Barcha sotuv tarixini o'chirmoqchimisiz?\nBu amalni qaytarib bo'lmaydi!")) {
+                    state.salesHistory = [];
+                    saveData();
+                    updateReports();
+                    showNotification('Sotuv tarixi tozalandi!', 'success');
+                }
+            });
+
+            document.getElementById('export-data').addEventListener('click', function() {
+                exportData();
+            });
+
+            document.getElementById('reset-system').addEventListener('click', function() {
+                if (confirm("Tizimni qayta yuklash BARCHA ma'lumotlarni o'chiradi!\nDavom etishni xohlaysizmi?")) {
+                    state.menu = getDefaultMenu();
+                    state.tables = initializeTables();
+                    state.activeOrders = {};
+                    state.salesHistory = [];
+                    state.selectedTable = null;
+                    
+                    saveData();
+                    
+                    // Refresh UI
+                    renderTables();
+                    renderMenuCategories();
+                    renderMenuItems();
+                    updateKDSDisplay();
+                    updateReports();
+                    updateSettingsInfo();
+                    
+                    showNotification('Tizim qayta yuklandi!', 'success');
+                }
+            });
+        }
+
+        function switchPage(page) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+            
+            // Update page title
+            const pageTitles = {
+                'pos': 'POS Tizimi',
+                'kds': 'Oshxona (KDS)',
+                'menu': 'Menu Boshqaruvi',
+                'reports': 'Hisobotlar',
+                'settings': 'Sozlamalar'
+            };
+            document.getElementById('page-title').textContent = pageTitles[page];
+            
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.classList.add('hidden');
+                p.classList.remove('fade-in');
+            });
+            
+            // Show selected page
+            document.getElementById(`${page}-page`).classList.remove('hidden');
+            document.getElementById(`${page}-page`).classList.add('fade-in');
+            
+            // Update page-specific content
+            if (page === 'pos') {
+                renderTables();
+            } else if (page === 'kds') {
+                updateKDSDisplay();
+            } else if (page === 'reports') {
+                updateReports();
+            }
+            
+            // Close mobile menu if open
+            if (window.innerWidth < 768) {
+                document.querySelector('.sidebar').classList.remove('open');
+            }
+            
+            state.currentPage = page;
+        }
+
+        function renderTables(filter = 'all') {
+            const tablesContainer = document.querySelector('.grid.grid-cols-2.gap-3');
+            tablesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 20; i++) {
+                const table = state.tables[i];
+                
+                // Apply filter
+                if (filter === 'empty' && table.status !== "Bo'sh") continue;
+                if (filter === 'occupied' && table.status !== "Band") continue;
+                if (filter === 'payment' && table.status !== "To'lov kutilyapti") continue;
+                
+                let bgColor = 'bg-green-500';
+                let icon = '✅';
+                let timeText = '';
+                
+                if (table.status === "Band") {
+                    bgColor = 'bg-yellow-500';
+                    icon = '🔄';
+                } else if (table.status === "To'lov kutilyapti") {
+                    bgColor = 'bg-blue-500';
+                    icon = '💳';
+                }
+                
+                // Calculate order time if active
+                if (state.activeOrders[i]) {
+                    const orderTime = state.activeOrders[i].time;
+                    const elapsed = new Date() - new Date(orderTime);
+                    const mins = Math.floor(elapsed / 60000);
+                    timeText = `<div class="text-xs mt-1">⏱️ ${mins} min</div>`;
+                }
+                
+                const isSelected = state.selectedTable === i;
+                const selectedClass = isSelected ? 'ring-2 ring-white' : '';
+                
+                const tableElement = document.createElement('div');
+                tableElement.className = `table-card ${bgColor} ${selectedClass} text-white p-3 rounded-lg text-center cursor-pointer`;
+                tableElement.innerHTML = `
+                    <div class="font-bold">${icon} STOL ${i}</div>
+                    <div>${table.status}</div>
+                    ${timeText}
+                `;
+                
+                tableElement.addEventListener('click', () => selectTable(i));
+                
+                tablesContainer.appendChild(tableElement);
+            }
+        }
+
+        function selectTable(tableId) {
+            state.selectedTable = tableId;
+            renderTables();
+            
+            // Update cart title
+            document.getElementById('cart-title').textContent = `🛒 STOL ${tableId} BUYURTMASI`;
+            document.getElementById('cart-title').classList.add('text-blue-400');
+            
+            // Update cart display
+            updateCartDisplay();
+        }
+
+        function renderMenuCategories() {
+            const categoriesContainer = document.querySelector('.mb-4.flex.overflow-x-auto.space-x-2.pb-2');
+            categoriesContainer.innerHTML = '';
+            
+            // Also update category select in menu management
+            const categorySelect = document.getElementById('item-category');
+            categorySelect.innerHTML = '';
+            
+            for (let category in state.menu) {
+                // Category tabs for POS
+                const categoryTab = document.createElement('button');
+                categoryTab.className = 'category-tab px-4 py-2 rounded-lg bg-gray-700 text-white whitespace-nowrap';
+                categoryTab.textContent = category;
+                categoryTab.addEventListener('click', () => {
+                    document.querySelectorAll('.category-tab').forEach(tab => {
+                        tab.classList.remove('bg-blue-500');
+                        tab.classList.add('bg-gray-700');
+                    });
+                    categoryTab.classList.add('bg-blue-500');
+                    categoryTab.classList.remove('bg-gray-700');
+                    renderMenuItems('', category);
+                });
+                
+                if (categoriesContainer.children.length === 0) {
+                    categoryTab.classList.add('bg-blue-500');
+                }
+                
+                categoriesContainer.appendChild(categoryTab);
+                
+                // Category options for menu management
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            }
+            
+            // Render categories for menu management page
+            renderCategoriesList();
+        }
+
+        function renderCategoriesList() {
+            const categoriesList = document.getElementById('categories-list');
+            categoriesList.innerHTML = '';
+            
+            for (let category in state.menu) {
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'card p-4';
+                categoryCard.innerHTML = `
+                    <h4 class="font-semibold text-lg mb-2">${category}</h4>
+                    <p class="text-gray-400">${state.menu[category].length} ta mahsulot</p>
+                    <button class="delete-category mt-2 text-red-500 text-sm" data-category="${category}">
+                        <i class="fas fa-trash mr-1"></i> O'chirish
+                    </button>
+                `;
+                
+                categoriesList.appendChild(categoryCard);
+            }
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-category').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    if (confirm(`"${category}" kategoriyasini o'chirmoqchimisiz?`)) {
+                        delete state.menu[category];
+                        saveData();
+                        renderMenuCategories();
+                        renderMenuItems();
+                        renderMenuTable();
+                        showNotification(`"${category}" kategoriyasi o'chirildi!`, 'success');
+                    }
+                });
+            });
+        }
+
+        function renderMenuItems(searchTerm = '', category = null) {
+            const menuContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
+            menuContainer.innerHTML = '';
+            
+            // Use first category if none specified
+            if (!category) {
+                category = Object.keys(state.menu)[0];
+            }
+            
+            let items = state.menu[category] || [];
+            
+            // Apply search filter
+            if (searchTerm) {
+                items = [];
+                for (let cat in state.menu) {
+                    items = items.concat(
+                        state.menu[cat].filter(item => 
+                            item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                    );
+                }
+            }
+            
+            if (items.length === 0) {
+                menuContainer.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-search text-3xl mb-2"></i>
+                        <p>Hech narsa topilmadi</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            for (let item of items) {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item card p-4';
+                menuItem.innerHTML = `
+                    <h4 class="font-semibold text-lg mb-2">${item.name}</h4>
+                    <p class="text-green-500 font-bold mb-3">${item.price.toLocaleString()} so'm</p>
+                    <button class="add-to-cart btn-primary w-full py-2 rounded-lg font-semibold" data-name="${item.name}" data-price="${item.price}">
+                        + Qo'shish
+                    </button>
+                `;
+                
+                menuContainer.appendChild(menuItem);
+            }
+            
+            // Add event listeners for add to cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const price = parseInt(this.getAttribute('data-price'));
+                    addToCart({name, price});
+                });
+            });
+        }
+
+        function renderMenuTable() {
+            const menuTable = document.getElementById('menu-items-table');
+            menuTable.innerHTML = '';
+            
+            for (let category in state.menu) {
+                for (let item of state.menu[category]) {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-700';
+                    row.innerHTML = `
+                        <td class="px-4 py-2">${category}</td>
+                        <td class="px-4 py-2">${item.name}</td>
+                        <td class="px-4 py-2">${item.price.toLocaleString()} so'm</td>
+                        <td class="px-4 py-2">
+                            <button class="delete-item text-red-500" data-category="${category}" data-name="${item.name}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    menuTable.appendChild(row);
+                }
+            }
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    const name = this.getAttribute('data-name');
+                    
+                    if (confirm(`"${name}" ni o'chirmoqchimisiz?`)) {
+                        state.menu[category] = state.menu[category].filter(item => item.name !== name);
+                        saveData();
+                        renderMenuItems();
+                        renderMenuTable();
+                        showNotification(`"${name}" o'chirildi!`, 'success');
+                    }
+                });
+            });
+        }
+
+        function addToCart(item) {
+            if (!state.selectedTable) {
+                showNotification('Avval stolni tanlang!', 'warning');
+                return;
+            }
+            
+            const tableId = state.selectedTable;
+            
+            if (!state.activeOrders[tableId]) {
+                state.activeOrders[tableId] = {
+                    items: [],
+                    time: new Date(),
+                    status: "Yangi",
+                    tableId: tableId
+                };
+                state.tables[tableId].status = "Band";
+                renderTables();
+            }
+            
+            const order = state.activeOrders[tableId];
+            
+            // Check if item already exists
+            let found = false;
+            for (let cartItem of order.items) {
+                if (cartItem.name === item.name) {
+                    cartItem.qty += 1;
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                order.items.push({
+                    name: item.name,
+                    price: item.price,
+                    qty: 1,
+                    kdsStatus: "Kutmoqda"
+                });
+            }
+            
+            updateCartDisplay();
+            saveData();
+            
+            // Animate the button
+            const button = event.target;
+            button.classList.add('bg-green-500');
+            setTimeout(() => {
+                button.classList.remove('bg-green-500');
+            }, 300);
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (!state.selectedTable || !state.activeOrders[state.selectedTable]) {
+                cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Hozircha buyurtma yo\'q</p>';
+                cartTotal.textContent = '0 so\'m';
+                return;
+            }
+            
+            const order = state.activeOrders[state.selectedTable];
+            let total = 0;
+            let itemsHTML = '';
+            
+            for (let item of order.items) {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                
+                itemsHTML += `
+                    <div class="flex justify-between items-center p-3 border-b border-gray-700">
+                        <div>
+                            <div class="font-semibold">${item.name}</div>
+                            <div class="text-sm text-gray-400">${item.price.toLocaleString()} × ${item.qty} = ${subtotal.toLocaleString()} so'm</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="change-qty bg-red-500 text-white w-8 h-8 rounded-full" data-name="${item.name}" data-delta="-1">−</button>
+                            <button class="change-qty bg-green-500 text-white w-8 h-8 rounded-full" data-name="${item.name}" data-delta="1">+</button>
+                            <button class="remove-item bg-red-700 text-white w-8 h-8 rounded-full" data-name="${item.name}"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            cartItems.innerHTML = itemsHTML;
+            cartTotal.textContent = `${total.toLocaleString()} so'm`;
+            
+            // Add event listeners for cart controls
+            document.querySelectorAll('.change-qty').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const delta = parseInt(this.getAttribute('data-delta'));
+                    changeQty(name, delta);
+                });
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    removeFromCart(name);
+                });
+            });
+        }
+
+        function changeQty(itemName, delta) {
+            if (!state.selectedTable) return;
+            
+            const order = state.activeOrders[state.selectedTable];
+            
+            for (let i = 0; i < order.items.length; i++) {
+                if (order.items[i].name === itemName) {
+                    order.items[i].qty += delta;
+                    
+                    if (order.items[i].qty <= 0) {
+                        order.items.splice(i, 1);
+                    }
+                    break;
+                }
+            }
+            
+            if (order.items.length === 0) {
+                delete state.activeOrders[state.selectedTable];
+                state.tables[state.selectedTable].status = "Bo'sh";
+                state.selectedTable = null;
+                document.getElementById('cart-title').textContent = '🛒 BUYURTMA';
+                document.getElementById('cart-title').classList.remove('text-blue-400');
+                renderTables();
+            }
+            
+            updateCartDisplay();
+            saveData();
+        }
+
+        function removeFromCart(itemName) {
+            if (!state.selectedTable) return;
+            
+            const order = state.activeOrders[state.selectedTable];
+            order.items = order.items.filter(item => item.name !== itemName);
+            
+            if (order.items.length === 0) {
+                delete state.activeOrders[state.selectedTable];
+                state.tables[state.selectedTable].status = "Bo'sh";
+                state.selectedTable = null;
+                document.getElementById('cart-title').textContent = '🛒 BUYURTMA';
+                document.getElementById('cart-title').classList.remove('text-blue-400');
+                renderTables();
+            }
+            
+            updateCartDisplay();
+            saveData();
+        }
+
+        function openPaymentModal() {
+            const tableId = state.selectedTable;
+            const order = state.activeOrders[tableId];
+            const total = order.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            document.getElementById('payment-table').textContent = `STOL ${tableId}`;
+            document.getElementById('payment-subtotal').textContent = `${total.toLocaleString()} so'm`;
+            document.getElementById('payment-total').textContent = `${total.toLocaleString()} so'm`;
+            document.getElementById('discount-percent').value = 0;
+            
+            // Render payment items
+            const paymentItems = document.getElementById('payment-items');
+            let itemsHTML = '';
+            
+            for (let item of order.items) {
+                const subtotal = item.price * item.qty;
+                itemsHTML += `
+                    <div class="flex justify-between py-2 border-b border-gray-700">
+                        <div>${item.qty}x ${item.name}</div>
+                        <div>${subtotal.toLocaleString()} so'm</div>
+                    </div>
+                `;
+            }
+            
+            paymentItems.innerHTML = itemsHTML;
+            
+            // Show modal
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function updatePaymentTotal() {
+            const tableId = state.selectedTable;
+            const order = state.activeOrders[tableId];
+            const total = order.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = parseInt(document.getElementById('discount-percent').value) || 0;
+            const finalTotal = total * (1 - discount / 100);
+            
+            document.getElementById('payment-total').textContent = `${finalTotal.toLocaleString()} so'm`;
+        }
+
+        function processPayment() {
+            const tableId = state.selectedTable;
+            const order = state.activeOrders[tableId];
+            const total = order.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = parseInt(document.getElementById('discount-percent').value) || 0;
+            const finalTotal = total * (1 - discount / 100);
+            
+            // Save to history
+            state.salesHistory.push({
+                date: new Date(),
+                table: tableId,
+                items: [...order.items],
+                total: total,
+                discountPercent: discount,
+                finalTotal: finalTotal
+            });
+            
+            // Generate receipt
+            generateReceipt(tableId, order, total, discount, finalTotal);
+            
+            // Clear order
+            delete state.activeOrders[tableId];
+            state.tables[tableId].status = "Bo'sh";
+            state.selectedTable = null;
+            
+            saveData();
+            
+            // Close modal and update UI
+            document.getElementById('payment-modal').classList.add('hidden');
+            showNotification(`To'lov qabul qilindi! Jami: ${finalTotal.toLocaleString()} so'm`, 'success');
+            
+            renderTables();
+            document.getElementById('cart-title').textContent = '🛒 BUYURTMA';
+            document.getElementById('cart-title').classList.remove('text-blue-400');
+            updateCartDisplay();
+            updateReports();
+        }
+
+        function generateReceipt(tableId, order, total, discount, finalTotal) {
+            const now = new Date();
+            let receiptHTML = `
+                <div class="text-center border-b border-black pb-2 mb-2">
+                    <p>Sana: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})}</p>
+                    <p>Stol: ${tableId}</p>
+                </div>
+                <div class="border-b border-black pb-2 mb-2">
+            `;
+            
+            for (let item of order.items) {
+                const subtotal = item.price * item.qty;
+                receiptHTML += `
+                    <div class="flex justify-between">
+                        <div>${item.qty}x ${item.name}</div>
+                        <div>${subtotal.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+            
+            receiptHTML += `
+                </div>
+                <div class="border-b border-black pb-2 mb-2">
+                    <div class="flex justify-between">
+                        <div>Subtotal:</div>
+                        <div>${total.toLocaleString()} so'm</div>
+                    </div>
+            `;
+            
+            if (discount > 0) {
+                receiptHTML += `
+                    <div class="flex justify-between text-red-600">
+                        <div>Chegirma (${discount}%):</div>
+                        <div>-${(total * discount / 100).toLocaleString()} so'm</div>
+                    </div>
+                `;
+            }
+            
+            receiptHTML += `
+                </div>
+                <div class="flex justify-between font-bold text-lg">
+                    <div>JAMI:</div>
+                    <div>${finalTotal.toLocaleString()} so'm</div>
+                </div>
+                <div class="text-center mt-4 border-t border-black pt-2">
+                    <p class="font-bold">Rahmat! Yana buyurmang!</p>
+                </div>
+            `;
+            
+            document.getElementById('receipt-content').innerHTML = receiptHTML;
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function updateKDSDisplay() {
+            const kdsContainer = document.getElementById('kds-orders');
+            const activeOrders = Object.values(state.activeOrders).filter(o => o.items && o.status !== "Yangi");
+            
+            if (activeOrders.length === 0) {
+                kdsContainer.innerHTML = `
+                    <div class="col-span-3 text-center py-10 text-gray-500">
+                        <i class="fas fa-check-circle text-4xl mb-4"></i>
+                        <p>Hozircha buyurtma yo'q</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let kdsHTML = '';
+            
+            for (let order of activeOrders) {
+                const elapsed = new Date() - new Date(order.time);
+                const mins = Math.floor(elapsed / 60000);
+                
+                // Priority color based on time
+                let priorityColor = 'bg-green-500';
+                if (mins > 20) priorityColor = 'bg-red-500';
+                else if (mins > 10) priorityColor = 'bg-yellow-500';
+                
+                let itemsHTML = '';
+                
+                for (let item of order.items) {
+                    const status = item.kdsStatus;
+                    const btnColor = status === "Tayyor" ? 'bg-green-500' : 'bg-yellow-500';
+                    const btnText = status === "Tayyor" ? '✅ Tayyor' : '🔄 Tayyorlanmoqda';
+                    
+                    itemsHTML += `
+                        <div class="flex justify-between items-center p-3 bg-gray-700 rounded-lg mb-2">
+                            <div>
+                                <div class="font-semibold">${item.qty}x ${item.name}</div>
+                            </div>
+                            <button class="toggle-status ${btnColor} text-white px-3 py-1 rounded text-sm" data-table="${order.tableId}" data-name="${item.name}">
+                                ${btnText}
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                kdsHTML += `
+                    <div class="card p-4">
+                        <div class="${priorityColor} text-white p-3 rounded-lg mb-4 flex justify-between items-center">
+                            <div class="font-bold text-lg">🪑 STOL ${order.tableId}</div>
+                            <div class="font-bold">⏱️ ${mins} min</div>
+                        </div>
+                        <div class="mb-4">
+                            ${itemsHTML}
+                        </div>
+                        <button class="mark-ready btn-success w-full py-2 rounded-lg font-semibold" data-table="${order.tableId}">
+                            ✅ BUYURTMA TAYYOR
+                        </button>
+                    </div>
+                `;
+            }
+            
+            kdsContainer.innerHTML = kdsHTML;
+            
+            // Add event listeners
+            document.querySelectorAll('.toggle-status').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tableId = parseInt(this.getAttribute('data-table'));
+                    const itemName = this.getAttribute('data-name');
+                    toggleItemStatus(tableId, itemName);
+                });
+            });
+            
+            document.querySelectorAll('.mark-ready').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tableId = parseInt(this.getAttribute('data-table'));
+                    markOrderReady(tableId);
+                });
+            });
+        }
+
+        function toggleItemStatus(tableId, itemName) {
+            if (state.activeOrders[tableId]) {
+                for (let item of state.activeOrders[tableId].items) {
+                    if (item.name === itemName) {
+                        item.kdsStatus = item.kdsStatus === "Tayyor" ? "Tayyorlanmoqda" : "Tayyor";
+                        break;
+                    }
+                }
+                saveData();
+                updateKDSDisplay();
+            }
+        }
+
+        function markOrderReady(tableId) {
+            if (state.activeOrders[tableId]) {
+                for (let item of state.activeOrders[tableId].items) {
+                    item.kdsStatus = "Tayyor";
+                }
+                state.activeOrders[tableId].status = "Tayyor";
+                state.tables[tableId].status = "To'lov kutilyapti";
+                
+                saveData();
+                updateKDSDisplay();
+                renderTables();
+            }
+        }
+
+        function updateReports() {
+            if (state.salesHistory.length === 0) {
+                document.getElementById('total-sales').textContent = '0 so\'m';
+                document.getElementById('order-count').textContent = '0';
+                document.getElementById('avg-bill').textContent = '0 so\'m';
+                document.getElementById('top-item').textContent = '-';
+                
+                // Clear charts
+                const salesCtx = document.getElementById('sales-chart').getContext('2d');
+                const itemsCtx = document.getElementById('top-items-chart').getContext('2d');
+                
+                if (window.salesChart) window.salesChart.destroy();
+                if (window.itemsChart) window.itemsChart.destroy();
+                
+                salesCtx.clearRect(0, 0, salesCtx.canvas.width, salesCtx.canvas.height);
+                itemsCtx.clearRect(0, 0, itemsCtx.canvas.width, itemsCtx.canvas.height);
+                
+                // Clear sales table
+                document.getElementById('sales-table').innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">Ma\'lumot yo\'q</td></tr>';
+                
+                return;
+            }
+            
+            const period = document.querySelector('.report-period-btn.active').getAttribute('data-period');
+            const now = new Date();
+            
+            // Filter sales by period
+            let filteredSales = state.salesHistory.filter(sale => {
+                const saleDate = new Date(sale.date);
+                
+                if (period === 'today') {
+                    return saleDate.toDateString() === now.toDateString();
+                } else if (period === 'week') {
+                    const weekStart = new Date(now);
+                    weekStart.setDate(now.getDate() - now.getDay());
+                    return saleDate >= weekStart;
+                } else if (period === 'month') {
+                    return saleDate.getMonth() === now.getMonth() && saleDate.getFullYear() === now.getFullYear();
+                } else {
+                    return true; // All
+                }
+            });
+            
+            // Calculate KPIs
+            const totalSales = filteredSales.reduce((sum, sale) => sum + sale.finalTotal, 0);
+            const orderCount = filteredSales.length;
+            const avgBill = orderCount > 0 ? totalSales / orderCount : 0;
+            
+            // Top item
+            const itemCounts = {};
+            for (let sale of filteredSales) {
+                for (let item of sale.items) {
+                    if (!itemCounts[item.name]) itemCounts[item.name] = 0;
+                    itemCounts[item.name] += item.qty;
+                }
+            }
+            
+            let topItem = '-';
+            if (Object.keys(itemCounts).length > 0) {
+                topItem = Object.keys(itemCounts).reduce((a, b) => itemCounts[a] > itemCounts[b] ? a : b);
+            }
+            
+            // Update KPI cards
+            document.getElementById('total-sales').textContent = `${totalSales.toLocaleString()} so'm`;
+            document.getElementById('order-count').textContent = orderCount;
+            document.getElementById('avg-bill').textContent = `${avgBill.toLocaleString()} so'm`;
+            document.getElementById('top-item').textContent = topItem;
+            
+            // Update charts
+            updateSalesChart(filteredSales);
+            updateTopItemsChart(itemCounts);
+            
+            // Update sales table
+            updateSalesTable(filteredSales);
+        }
+
+        function updateSalesChart(sales) {
+            const ctx = document.getElementById('sales-chart').getContext('2d');
+            
+            // Group by date
+            const dailySales = {};
+            for (let sale of sales) {
+                const dateKey = new Date(sale.date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit'});
+                if (!dailySales[dateKey]) dailySales[dateKey] = 0;
+                dailySales[dateKey] += sale.finalTotal;
+            }
+            
+            const dates = Object.keys(dailySales);
+            const amounts = Object.values(dailySales);
+            
+            if (window.salesChart) window.salesChart.destroy();
+            
+            window.salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Sotuv (so\'m)',
+                        data: amounts,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTopItemsChart(itemCounts) {
+            const ctx = document.getElementById('top-items-chart').getContext('2d');
+            
+            // Get top 5 items
+            const topItems = Object.entries(itemCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const names = topItems.map(item => item[0]);
+            const counts = topItems.map(item => item[1]);
+            
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#9ca3af'];
+            
+            if (window.itemsChart) window.itemsChart.destroy();
+            
+            window.itemsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [{
+                        label: 'Soni',
+                        data: counts,
+                        backgroundColor: colors.slice(0, names.length),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSalesTable(sales) {
+            const tableBody = document.getElementById('sales-table');
+            tableBody.innerHTML = '';
+            
+            const sortedSales = [...sales].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            for (let sale of sortedSales) {
+                const saleDate = new Date(sale.date);
+                const dateStr = saleDate.toLocaleDateString('en-GB');
+                const timeStr = saleDate.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+                
+                const itemsText = sale.items.slice(0, 2).map(item => `${item.qty}x${item.name}`).join(', ');
+                const moreItems = sale.items.length > 2 ? '...' : '';
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700';
+                row.innerHTML = `
+                    <td class="px-4 py-2">${dateStr}</td>
+                    <td class="px-4 py-2">${timeStr}</td>
+                    <td class="px-4 py-2">Stol ${sale.table}</td>
+                    <td class="px-4 py-2">${itemsText}${moreItems}</td>
+                    <td class="px-4 py-2">${sale.total.toLocaleString()}</td>
+                    <td class="px-4 py-2">${sale.discountPercent}%</td>
+                    <td class="px-4 py-2">${sale.finalTotal.toLocaleString()}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+        }
+
+        function updateSettingsInfo() {
+            const categoryCount = Object.keys(state.menu).length;
+            const itemCount = Object.values(state.menu).reduce((sum, items) => sum + items.length, 0);
+            const salesCount = state.salesHistory.length;
+            
+            document.getElementById('category-count').textContent = categoryCount;
+            document.getElementById('item-count').textContent = itemCount;
+            document.getElementById('sales-count').textContent = salesCount;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-GB');
+            const dateStr = now.toLocaleDateString('en-GB', {weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'});
+            
+            document.getElementById('current-time').textContent = timeStr;
+            document.getElementById('current-date').textContent = dateStr;
+            
+            // Update stats
+            const activeOrdersCount = Object.keys(state.activeOrders).length;
+            document.getElementById('active-orders-count').textContent = `Faol: ${activeOrdersCount}`;
+            
+            const today = new Date().toDateString();
+            const todaySales = state.salesHistory
+                .filter(sale => new Date(sale.date).toDateString() === today)
+                .reduce((sum, sale) => sum + sale.finalTotal, 0);
+            
+            document.getElementById('daily-revenue').textContent = `Bugun: ${todaySales.toLocaleString()} so'm`;
+        }
+
+        function exportData() {
+            let exportText = "=".repeat(60) + "\n";
+            exportText += "ROMS PRO - MA'LUMOTLAR EKSPORTI\n";
+            exportText += "=".repeat(60) + "\n\n";
+            exportText += `Eksport Sanasi: ${new Date().toLocaleString()}\n\n`;
+            
+            // Menu
+            exportText += "\n📋 MENU:\n";
+            exportText += "-".repeat(60) + "\n";
+            for (let category in state.menu) {
+                exportText += `\n${category}:\n`;
+                for (let item of state.menu[category]) {
+                    exportText += `  - ${item.name}: ${item.price.toLocaleString()} so'm\n`;
+                }
+            }
+            
+            // Sales History
+            exportText += "\n\n💰 SOTUV TARIXI:\n";
+            exportText += "-".repeat(60) + "\n";
+            for (let sale of state.salesHistory) {
+                const saleDate = new Date(sale.date);
+                exportText += `\nSana: ${saleDate.toLocaleString()}\n`;
+                exportText += `Stol: ${sale.table}\n`;
+                exportText += "Mahsulotlar:\n";
+                for (let item of sale.items) {
+                    exportText += `  - ${item.qty}x ${item.name}: ${(item.price * item.qty).toLocaleString()} so'm\n`;
+                }
+                exportText += `Jami: ${sale.total.toLocaleString()} so'm\n`;
+                exportText += `Chegirma: ${sale.discountPercent}%\n`;
+                exportText += `Yakuniy: ${sale.finalTotal.toLocaleString()} so'm\n`;
+                exportText += "-".repeat(40) + "\n";
+            }
+            
+            // Create and download file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `roms_export_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Ma\'lumotlar eksport qilindi!', 'success');
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-x-full`;
+            
+            let bgColor = 'bg-blue-500';
+            if (type === 'success') bgColor = 'bg-green-500';
+            else if (type === 'warning') bgColor = 'bg-yellow-500';
+            else if (type === 'error') bgColor = 'bg-red-500';
+            
+            notification.className += ` ${bgColor} text-white`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 10);
+            
+            // Animate out and remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function saveData() {
+            const data = {
+                menu: state.menu,
+                tables: state.tables,
+                activeOrders: state.activeOrders,
+                salesHistory: state.salesHistory
+            };
+            localStorage.setItem('romsData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('romsData'));
+            if (data) {
+                state.menu = data.menu || {};
+                state.tables = data.tables || initializeTables();
+                state.activeOrders = data.activeOrders || {};
+                state.salesHistory = data.salesHistory || [];
+            }
+        }
+    </script>
+</body>
+</html>
